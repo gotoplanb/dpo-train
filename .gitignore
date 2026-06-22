@@ -1,0 +1,7 @@
+.venv/
+out/
+__pycache__/
+*.pyc
+*.gguf
+*.safetensors
+.DS_Store
