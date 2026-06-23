@@ -68,3 +68,24 @@ curl localhost:8077/health                    # -> ok
 
 Trains arbitrary preference data into a model on owned hardware — local-only,
 never cloud. One run at a time (memory). `ollama create` runs locally.
+
+## Run as a managed service (launchd)
+
+The sidecar should run as a user LaunchAgent (auto-start at login, auto-restart
+on crash — Metal OOMs hard-abort the process, so KeepAlive matters). A user
+agent (not a root daemon) is required: MLX needs the GUI user session for Metal.
+
+```bash
+cp launchd/com.gotoplanb.dpo-train.plist ~/Library/LaunchAgents/
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.gotoplanb.dpo-train.plist
+launchctl enable  gui/$(id -u)/com.gotoplanb.dpo-train
+curl localhost:8077/health   # -> ok
+```
+
+Manage it:
+```bash
+launchctl print    gui/$(id -u)/com.gotoplanb.dpo-train   # status + pid
+launchctl kickstart -k gui/$(id -u)/com.gotoplanb.dpo-train  # restart
+launchctl bootout  gui/$(id -u)/com.gotoplanb.dpo-train   # stop/unload
+```
+Logs: `logs/sidecar.out.log`, `logs/sidecar.err.log` (gitignored).

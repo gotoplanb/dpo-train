@@ -5,3 +5,4 @@ __pycache__/
 *.gguf
 *.safetensors
 .DS_Store
+logs/

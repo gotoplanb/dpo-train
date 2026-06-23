@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.gotoplanb.dpo-train</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/dave/dpo-train/.venv/bin/python</string>
+    <string>-u</string>
+    <string>/Users/dave/dpo-train/app.py</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/dave/dpo-train</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PORT</key><string>8077</string>
+    <key>HOME</key><string>/Users/dave</string>
+  </dict>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>ThrottleInterval</key><integer>10</integer>
+  <key>StandardOutPath</key><string>/Users/dave/dpo-train/logs/sidecar.out.log</string>
+  <key>StandardErrorPath</key><string>/Users/dave/dpo-train/logs/sidecar.err.log</string>
+</dict>
+</plist>
