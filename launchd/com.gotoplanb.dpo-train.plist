@@ -14,6 +14,9 @@
   <dict>
     <key>PORT</key><string>8077</string>
     <key>HOME</key><string>/Users/dave</string>
+    <!-- launchd's default PATH is minimal; add the dirs holding `ollama` so the
+         safetensors register step finds the CLI (conduct#46). -->
+    <key>PATH</key><string>/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
   </dict>
   <key>RunAtLoad</key><true/>
   <key>KeepAlive</key><true/>

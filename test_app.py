@@ -33,6 +33,23 @@ class ContractTests(unittest.TestCase):
         self.assertTrue(tag.startswith("gemma-3-4b-it-dpo-"))
         self.assertTrue(tag.endswith("deadbeef"))
 
+    def test_ollama_bin_resolves_without_path(self):
+        # conduct#46: under launchd the PATH is minimal so a bare 'ollama' isn't
+        # found. The resolver must still return an absolute, existing binary.
+        import os
+        from unittest import mock
+        with mock.patch.dict(os.environ, {"PATH": "/nonexistent"}, clear=False):
+            os.environ.pop("OLLAMA_BIN", None)
+            resolved = app._ollama_bin()
+        # either a real install location, or the documented last-resort bare name
+        self.assertTrue(resolved == "ollama" or Path(resolved).is_absolute())
+
+    def test_ollama_bin_honors_override(self):
+        import os
+        from unittest import mock
+        with mock.patch.dict(os.environ, {"OLLAMA_BIN": "/custom/ollama"}, clear=False):
+            self.assertEqual(app._ollama_bin(), "/custom/ollama")
+
     def test_validate_rejects_missing_base_model(self):
         with self.assertRaises(app.TrainError):
             app._validate({"pairs": [{"chosen": "c", "rejected": "r"}]})

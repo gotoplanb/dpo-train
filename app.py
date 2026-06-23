@@ -30,12 +30,26 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess  # noqa: S404 - registers the GGUF as an Ollama tag (trusted argv)
 import tempfile
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+
+
+def _ollama_bin() -> str:
+    """Resolve the ollama CLI absolutely — under launchd the PATH is minimal
+    (/usr/bin:/bin:…) so a bare 'ollama' isn't found (conduct#46). Honor an
+    OLLAMA_BIN override, else PATH, else the known Homebrew/install locations."""
+    cand = os.environ.get("OLLAMA_BIN") or shutil.which("ollama")
+    if cand:
+        return cand
+    for p in ("/usr/local/bin/ollama", "/opt/homebrew/bin/ollama"):
+        if Path(p).exists():
+            return p
+    return "ollama"  # last resort — fails with a clear FileNotFoundError
 
 OUTPUT_DIR = Path(os.environ.get("DPO_OUTPUT_DIR", str(Path.home() / "dpo-train" / "out")))
 MAX_PAIRS = 50_000
@@ -90,7 +104,7 @@ def _ollama_register(tag: str, model_path: str) -> None:
         modelfile = Path(td) / "Modelfile"
         modelfile.write_text(f"FROM {model_path}\n")
         subprocess.run(  # noqa: S603 - argv is constructed, not shell
-            ["ollama", "create", tag, "-f", str(modelfile)],  # noqa: S607
+            [_ollama_bin(), "create", tag, "-f", str(modelfile)],
             check=True, capture_output=True, text=True, timeout=900,
         )
 
